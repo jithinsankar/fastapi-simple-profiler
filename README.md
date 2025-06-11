@@ -123,7 +123,8 @@ Make some requests to your FastAPI application.
   * http://localhost:8000/?profile=true  
   * http://localhost:8000/items/123?profile=true  
   * http://localhost:8000/slow-endpoint?profile=true  
-* **Profile all requests**:  
+* **Profile all requests**: 
+ 
   * Set enable\_by\_default=True when adding ProfilerMiddleware to your app.  
   * OR set the environment variable before running your app: FASTAPI\_SIMPLE\_PROFILER\_ENABLED=true uvicorn your\_app\_module:app \--reload \--port 8000
 
@@ -163,3 +164,4 @@ Contributions are welcome\! If you find bugs, have feature requests, or want to 
 ## **License**
 
 This project is licensed under the MIT License \- see the [LICENSE](http://docs.google.com/LICENSE) file for details.
+

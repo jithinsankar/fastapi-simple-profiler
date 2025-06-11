@@ -15,8 +15,8 @@ else:
 setup(
     name="fastapi-simple-profiler",
     version="0.1.0", # Initial version
-    author="Your Name or Community Name", # Replace with your name/organization
-    author_email="your.email@example.com", # Replace with your email/organization email
+    author="Jithin Sankar", # Replace with your name/organization
+    author_email="jithinsankar@hotmail.com", # Replace with your email/organization email
     description="A dead simple FastAPI profiler with CSV export for Google Sheets.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -41,8 +41,8 @@ setup(
     ],
     keywords="fastapi profiler performance metrics csv google-sheets monitoring profiling",
     project_urls={
-        "Bug Tracker": "https://github.com/your-org/fastapi-simple-profiler/issues", # Replace with your issues URL
-        "Source Code": "https://github.com/your-org/fastapi-simple-profiler", # Replace with your source code URL
+        "Bug Tracker": "https://github.com/jithinsankar/fastapi-simple-profiler/issues", # Replace with your issues URL
+        "Source Code": "https://github.com/jithinsankar/fastapi-simple-profiler", # Replace with your source code URL
     },
 )
 
