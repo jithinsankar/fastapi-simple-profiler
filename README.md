@@ -16,7 +16,9 @@ A dead simple profiler for FastAPI applications, designed to provide per-request
 
 You can install the package using pip:
 
+```bash
 pip install fastapi-simple-profiler
+```
 
 This package depends on pyinstrument for detailed CPU time measurement, pandas for CSV generation, and fastapi/starlette for the web framework integration. These dependencies will be automatically installed.
 

@@ -14,7 +14,7 @@ else:
 
 setup(
     name="fastapi-simple-profiler",
-    version="0.1.0", # Initial version
+    version="0.1.1", # Initial version
     author="Jithin Sankar", 
     description="A dead simple FastAPI profiler with CSV export for Google Sheets.",
     long_description=long_description,
