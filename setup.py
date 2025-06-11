@@ -15,12 +15,11 @@ else:
 setup(
     name="fastapi-simple-profiler",
     version="0.1.0", # Initial version
-    author="Jithin Sankar", # Replace with your name/organization
-    author_email="jithinsankar@hotmail.com", # Replace with your email/organization email
+    author="Jithin Sankar", 
     description="A dead simple FastAPI profiler with CSV export for Google Sheets.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/your-org/fastapi-simple-profiler", # Replace with your project's GitHub URL
+    url="https://github.com/jithinsankar/fastapi-simple-profiler", # Replace with your project's GitHub URL
     packages=find_packages(), # Automatically finds all packages in the directory
     classifiers=[
         "Programming Language :: Python :: 3",
