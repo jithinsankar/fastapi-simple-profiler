@@ -1,6 +1,7 @@
 # **FastAPI Simple Profiler**
 
 A dead simple profiler for FastAPI applications, designed to provide per-request performance metrics and export them to a CSV format easily importable into Google Sheets or other spreadsheet software.
+![Image](https://github.com/user-attachments/assets/2bdc4c99-6a6d-44c9-b573-0ec9836896ad)
 
 ## **Features**
 
@@ -50,7 +51,7 @@ app = FastAPI()
 
 app.add_middleware(  
     ProfilerMiddleware,  
-    enable_by_default=False, # Set to True to enable profiling for all requests by default  
+    enable_by_default=True, # Set to True to enable profiling for all requests by default  
     profile_query_param="profile", # e.g., use `?profile=true` in URL  
     max_retained_requests=500 # Keep data for the last 500 requests in memory  
 )
@@ -101,6 +102,9 @@ async def clear_profiler_data():
     profiler_instance.clear_data()  
     return {"message": "Profiler data cleared."}
 
+
+
+
 if __name__ == "__main__":  
     # To run this example:  
     # 1. Save the above code as `main.py` in your project root.  
@@ -111,6 +115,119 @@ if __name__ == "__main__":
     # FASTAPI_SIMPLE_PROFILER_ENABLED=true uvicorn main:app --reload --port 8000  
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
+if you want to preview the results at an endpoint like below add the following code
+
+![Image](https://github.com/user-attachments/assets/2bdc4c99-6a6d-44c9-b573-0ec9836896ad)
+
+```python
+
+import pandas as pd
+from fastapi.responses import HTMLResponse
+
+
+@app.get("/profiler/dashboard", summary="Profiler Dashboard", response_class=HTMLResponse)
+async def get_profiler_dashboard():
+    """
+    Dedicated endpoint to display the collected profiling metrics as an HTML table in the browser.
+    """
+    profile_data = profiler_instance.get_profile_data()
+
+    if not profile_data:
+        # If no data, display a message
+        html_content = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>FastAPI Profiler Dashboard</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #374151; }
+                .container { max-width: 90%; margin: 2rem auto; padding: 1.5rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+                h1 { color: #1f2937; }
+                .clear-button { background-color: #dc2626; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; margin-top: 1rem; }
+                .clear-button:hover { background-color: #ef4444; }
+                .export-csv-button { background-color: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; margin-top: 1rem; margin-left: 0.5rem; }
+                .export-csv-button:hover { background-color: #059669; }
+                .message { text-align: center; font-size: 1.125rem; color: #6b7280; }
+            </style>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container">
+                <h1 class="text-3xl font-bold mb-4">FastAPI Profiler Dashboard</h1>
+                <p class="message">No profiling data collected yet. Make some requests with `?profile=true` or set `FASTAPI_SIMPLE_PROFILER_ENABLED=true`.</p>
+                <div class="flex justify-start space-x-2">
+                    <a href="/profiler/clear" class="clear-button">Clear Data</a>
+                    <a href="/profiler/metrics.csv" class="export-csv-button">Export to CSV</a>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    else:
+        # Create a DataFrame from the profile data
+        df = pd.DataFrame(profile_data)
+
+        # Define the desired column order for display
+        desired_columns = [
+            "Timestamp", "RequestPath", "HTTPMethod", "StatusCode",
+            "TotalTimeMs", "CPUTimeMs"
+        ]
+        # Ensure all desired columns are present, filling missing with NaN if necessary
+        for col in desired_columns:
+            if col not in df.columns:
+                df[col] = pd.NA
+
+        # Reorder columns to the desired sequence
+        df = df[desired_columns]
+
+        # Convert DataFrame to an HTML table string
+        html_table = df.to_html(index=False, classes="min-w-full divide-y divide-gray-200 shadow-sm sm:rounded-lg")
+
+        # Basic HTML structure with Tailwind CSS for modern look
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>FastAPI Profiler Dashboard</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                /* Custom styles for the table */
+                body {{ font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #374151; }}
+                .container {{ max-width: 90%; margin: 2rem auto; padding: 1.5rem; background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }}
+                h1 {{ color: #1f2937; }}
+                table {{ width: 100%; border-collapse: collapse; margin-top: 1.5rem; }}
+                th, td {{ padding: 0.75rem; border: 1px solid #e5e7eb; text-align: left; }}
+                th {{ background-color: #f9fafb; font-weight: 600; color: #4b5563; }}
+                tr:nth-child(even) {{ background-color: #f3f4f6; }}
+                tr:hover {{ background-color: #e0f2fe; }} /* Light blue hover */
+                .clear-button {{ background-color: #dc2626; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; margin-top: 1rem; }}
+                .clear-button:hover {{ background-color: #ef4444; }}
+                .export-csv-button {{ background-color: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; margin-top: 1rem; margin-left: 0.5rem; }}
+                .export-csv-button:hover {{ background-color: #059669; }}
+            </style>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container">
+                <h1 class="text-3xl font-bold mb-4">FastAPI Profiler Dashboard</h1>
+                {html_table}
+                <div class="flex justify-start space-x-2">
+                    <a href="/profiler/clear" class="clear-button">Clear Data</a>
+                    <a href="/profiler/metrics.csv" class="export-csv-button">Export to CSV</a>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+    return HTMLResponse(content=html_content, status_code=200)
+```
+
 ### **2\. Run your FastAPI Application**
 
 Run your FastAPI application using Uvicorn (recommended ASGI server for FastAPI):
